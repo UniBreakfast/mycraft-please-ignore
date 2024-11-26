@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>0 one-on-one</title>
+
+  <style>
+    body,
+    html {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #splitter {
+      display: flex;
+      height: 100%;
+    }
+
+    #nav {
+      width: 250px;
+      overflow-y: auto;
+      background-color: #f0f0f0;
+      padding: 10px;
+      font-family: monospace;
+    }
+
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4vw;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      margin-left: 20px;
+    }
+
+    .folder-name {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    a {
+      text-decoration: none;
+      color: black;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    a.active {
+      font-weight: bold;
+      background-color: #ff05;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      font-size: 1.3em;
+    }
+
+    @media screen and (max-width: 600px) {
+      #splitter {
+        flex-direction: column;
+      }
+
+      #nav {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="splitter">
+    <div id="nav">
+      <ul>
+        <li class="folder-name">back-and-front</li>
+        <ul>
+          <li><a href="#/back-and-front/0-one-on-one/steps">0 one-on-one</a></li>
+          <li><a href="#/back-and-front/1-simple-file-server/steps">1 simple-file-server</a></li>
+          <li><a href="#/back-and-front/2-adequate-file-server/steps">2 adequate-file-server</a></li>
+          <li><a href="#/back-and-front/3-modular-server-with-api/steps">3 modular-server-with-api</a></li>
+        </ul>
+        <li class="folder-name">backend-only</li>
+        <ul>
+          <li><a href="#/backend-only/0-one-response/steps">0 one-response</a></li>
+          <li><a href="#/backend-only/1-few-routes-one-view/steps">1 few-routes-one-view</a></li>
+          <li><a href="#/backend-only/2-basic-modular-server/steps">2 basic-modular-server</a></li>
+        </ul>
+        <li class="folder-name">frontend-only</li>
+        <ul>
+          <li><a href="#/frontend-only/0-zero-level/steps">0 zero-level</a></li>
+          <li><a href="#/frontend-only/1-very-basic/steps">1 very-basic</a></li>
+          <li><a href="#/frontend-only/2-basic-with-pages/steps">2 basic-with-pages</a></li>
+          <li><a href="#/frontend-only/3-basic-with-commons/steps">3 basic-with-commons</a></li>
+          <li><a href="#/frontend-only/4-advancing-with-outer-source/steps">4 advancing-with-outer-source</a></li>
+        </ul>
+        <li class="folder-name"><a href="#/modularity/principles/principles">modularity</a></li>
+      </ul>
+    </div>
+
+    <div id="content">
+      <pre id="pre"></pre>
+    </div>
+  </div>
+
+  <script>
+    const contents = {}
+    
+    getContent();
+
+    onhashchange = getContent;
+
+    pre.onclick = () => pre.contentEditable = 'true';
+    pre.onblur = () => pre.contentEditable = 'false';
+    
+    function getContent() {
+      const path = location.hash.slice(1) || '/frontend-only/0-zero-level/steps';
+      
+      document.querySelector('.active')?.classList.remove('active');
+      document.querySelector('a[href="#' + path + '"]')?.classList.add('active');
+
+      if (contents[path]) {
+        pre.textContent = contents[path];
+        return;
+      }
+
+      fetch('dev-ruminations' + path + '.txt')
+        .then(response => response.text())
+        .then(text => {
+          if (text.includes('<!DOCTYPE html>')) throw new Error('Invalid path');
+
+          pre.textContent = text;
+          contents[path] = text;
+        })
+        .catch(error => {
+          location.hash = '/frontend-only/0-zero-level/steps';
+        });
+    }
+  </script>
+</body>
+
+</html>
